@@ -1,0 +1,16 @@
+{
+  "name": "cAr LovER’s — Verified Bangladeshi Car Marketplace",
+  "short_name": "cAr LovER’s",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#2563eb",
+  "description": "Verified Bangladeshi automotive marketplace with KYC Blue-Tick verification, mandatory Hybrid battery health reports, EXIF photo checks, and side-by-side car comparison.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/741/741407.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

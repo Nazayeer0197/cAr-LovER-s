@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cAr LovER’s — Verified Bangladeshi Car Marketplace</title>
+  <meta name="theme-color" content="#090d16" />
+  <link rel="manifest" href="manifest.json" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            },
+            darkbg: '#090d16',
+            darkcard: '#111827',
+            darkborder: '#1f2937'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-darkbg dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col">
+
+  <!-- Top Navbar -->
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-darkbg/90 backdrop-blur-md border-b border-slate-200 dark:border-darkborder">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <!-- Logo -->
+      <div class="flex items-center gap-2.5 cursor-pointer" onclick="resetAllFilters()">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white font-extrabold shadow-lg shadow-blue-500/20">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 17h8M5 11l1.5-4.5A2 2 0 018.4 5h7.2a2 2 0 011.9 1.5L19 11m-14 0h14m-14 0v5a1 1 0 001 1h1a1 1 0 001-1v-1h8v1a1 1 0 001 1h1a1 1 0 001-1v-5" />
+          </svg>
+        </div>
+        <div>
+          <span class="text-lg sm:text-xl font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300 bg-clip-text text-transparent">cAr LovER’s</span>
+          <span class="hidden sm:inline-block ml-1.5 text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold">BD</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Dark/Light Toggle -->
+        <button onclick="toggleTheme()" title="Toggle Dark/Light Mode" class="p-2 rounded-xl border border-slate-200 dark:border-darkborder bg-slate-100/70 dark:bg-darkcard hover:bg-slate-200 dark:hover:bg-slate-800 transition">
+          <svg id="sunIcon" class="w-5 h-5 text-amber-400 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg id="moonIcon" class="w-5 h-5 text-slate-700 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+
+        <!-- Saved Searches / Alerts -->
+        <button onclick="openModal('savedModal')" class="relative p-2 rounded-xl border border-slate-200 dark:border-darkborder bg-slate-100/70 dark:bg-darkcard hover:bg-slate-200 dark:hover:bg-slate-800 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <span id="savedBadge" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">2</span>
+        </button>
+
+        <!-- Verify / KYC Login -->
+        <button id="authBtn" onclick="openModal('authModal')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 dark:border-darkborder bg-slate-100/70 dark:bg-darkcard hover:border-blue-500 text-xs sm:text-sm font-semibold transition">
+          <span id="authStatusDot" class="w-2 h-2 rounded-full bg-amber-500"></span>
+          <span id="authBtnText">Login / Verify</span>
+        </button>
+
+        <!-- Post Ad -->
+        <button onclick="openModal('postModal')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-blue-600/20 transition">
+          + Post Ad
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full">
+
+    <!-- Visual Brand Bar with Logos + Others -->
+    <section class="mb-6">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Browse by Brand</h2>
+        <button onclick="saveCurrentSearch()" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+          Save Current Search
+        </button>
+      </div>
+      <div id="brandFilterBar" class="flex items-center gap-2.5 overflow-x-auto no-scrollbar pb-1"></div>
+    </section>
+
+    <!-- Comprehensive Filter Panel -->
+    <section class="bg-white dark:bg-darkcard border border-slate-200 dark:border-darkborder rounded-2xl p-4 mb-6 shadow-sm">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+        <!-- Search Input -->
+        <div class="lg:col-span-2">
+          <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Search Model / Keyword</label>
+          <input id="searchInput" type="text" oninput="applyFilters()" placeholder="e.g. Premio, Axio, CR-V, Aqua..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-sm focus:outline-none focus:border-blue-500" />
+        </div>
+
+        <!-- Condition -->
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Condition</label>
+          <select id="conditionFilter" onchange="applyFilters()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-sm focus:outline-none focus:border-blue-500">
+            <option value="All">All Conditions</option>
+            <option value="Reconditioned">Reconditioned</option>
+            <option value="Second Hand">Second Hand</option>
+            <option value="Brand New">Brand New</option>
+          </select>
+        </div>
+
+        <!-- Powertrain -->
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Powertrain</label>
+          <select id="powertrainFilter" onchange="applyFilters()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-sm focus:outline-none focus:border-blue-500">
+            <option value="All">Hybrid & Non-Hybrid</option>
+            <option value="Hybrid">Hybrid Only (Health Report)</option>
+            <option value="Non-Hybrid">Non-Hybrid Only</option>
+          </select>
+        </div>
+
+        <!-- Price Type -->
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Price Type</label>
+          <select id="priceTypeFilter" onchange="applyFilters()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-sm focus:outline-none focus:border-blue-500">
+            <option value="All">Fixed & Negotiable</option>
+            <option value="Fixed">Fixed Price</option>
+            <option value="Negotiable">Negotiable</option>
+          </select>
+        </div>
+
+        <!-- Location -->
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Location / Near Me</label>
+          <select id="locationFilter" onchange="applyFilters()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-sm focus:outline-none focus:border-blue-500">
+            <option value="All">All Bangladesh</option>
+            <option value="Gulshan">Gulshan / Niketon, Dhaka</option>
+            <option value="Banani">Banani, Dhaka</option>
+            <option value="Dhanmondi">Dhanmondi, Dhaka</option>
+            <option value="Uttara">Uttara, Dhaka</option>
+            <option value="Chattogram">Chattogram</option>
+            <option value="Sylhet">Sylhet</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Second Row: Price Range & Model Year -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3 pt-3 border-t border-slate-100 dark:border-darkborder">
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Min Price (Lakh ৳)</label>
+          <input id="minPriceFilter" type="number" oninput="applyFilters()" placeholder="e.g. 15" class="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-sm" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Max Price (Lakh ৳)</label>
+          <input id="maxPriceFilter" type="number" oninput="applyFilters()" placeholder="e.g. 85" class="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-sm" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">From Model Year</label>
+          <input id="minYearFilter" type="number" oninput="applyFilters()" placeholder="e.g. 2016" class="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-sm" />
+        </div>
+        <div class="flex items-end">
+          <button onclick="resetAllFilters()" class="w-full py-1.5 px-3 rounded-xl border border-slate-200 dark:border-darkborder hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold transition">
+            Reset All Filters
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Header -->
+    <div class="flex items-center justify-between mb-4">
+      <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">
+        Showing <span id="resultCount" class="text-blue-600 dark:text-blue-400 font-bold">0</span> verified cars in Bangladesh
+      </p>
+      <span class="text-xs text-slate-500 dark:text-slate-400">EXIF Photo Check & Blue-Tick Active</span>
+    </div>
+
+    <!-- Car Listings Grid -->
+    <div id="carGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </main>
+
+  <!-- Floating Compare Dock -->
+  <div id="compareDock" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 hidden bg-slate-900/95 dark:bg-slate-800/95 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-4 backdrop-blur-md">
+    <div class="text-xs sm:text-sm font-semibold">
+      <span id="compareCount" class="text-blue-400 font-bold">0</span>/3 Cars Selected
+    </div>
+    <button onclick="openCompareModal()" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold transition">
+      Compare Now (VS)
+    </button>
+    <button onclick="clearCompare()" class="text-xs text-slate-400 hover:text-white">Clear</button>
+  </div>
+
+  <!-- Floating AI Car Finder Assistant Button -->
+  <button onclick="openModal('aiModal')" class="fixed bottom-5 right-5 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-xs sm:text-sm shadow-xl shadow-blue-600/30 hover:scale-105 transition">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+    <span>AI Car Finder</span>
+  </button>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-200 dark:border-darkborder py-6 mt-12 text-center text-xs text-slate-500 dark:text-slate-400">
+    <p class="font-bold text-slate-700 dark:text-slate-300">cAr LovER’s Bangladesh — Verified Automotive Marketplace</p>
+    <p class="mt-1">NID/Passport Blue-Tick KYC • Mandatory Hybrid Battery Health Reports • EXIF Real-Photo Verification</p>
+  </footer>
+
+  <!-- MODAL 1: Car Details & Seller Chat -->
+  <div id="detailModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-darkborder rounded-2xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-start justify-between gap-3 mb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 id="detailTitle" class="text-xl font-extrabold"></h3>
+            <span id="detailBlueTick" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-500 text-xs font-bold">
+              ✓ Verified Seller
+            </span>
+          </div>
+          <p id="detailSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"></p>
+        </div>
+        <button onclick="closeModal('detailModal')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm font-bold">✕</button>
+      </div>
+
+      <img id="detailImg" src="" alt="Car" class="w-full h-56 sm:h-64 object-cover rounded-xl mb-4" />
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4 text-xs">
+        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder">
+          <span class="text-slate-400 block">Price (BDT)</span>
+          <span id="detailPrice" class="font-bold text-sm text-blue-500"></span>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder">
+          <span class="text-slate-400 block">Condition</span>
+          <span id="detailCondition" class="font-bold"></span>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder">
+          <span class="text-slate-400 block">Registration</span>
+          <span id="detailReg" class="font-bold"></span>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder">
+          <span class="text-slate-400 block">Location</span>
+          <span id="detailLocation" class="font-bold"></span>
+        </div>
+      </div>
+
+      <!-- Health / Diagnostic Report -->
+      <div id="detailHealthBox" class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 mb-4 text-xs">
+        <div class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center justify-between">
+          <span id="detailHealthLabel">Hybrid Battery Health Report</span>
+          <span id="detailHealthScore" class="px-2 py-0.5 rounded bg-emerald-500/20"></span>
+        </div>
+        <p id="detailHealthNotes" class="mt-1 text-slate-600 dark:text-slate-300"></p>
+      </div>
+
+      <p id="detailDesc" class="text-sm text-slate-600 dark:text-slate-300 mb-4 leading-relaxed"></p>
+
+      <!-- Quick Chat Section -->
+      <div class="border-t border-slate-200 dark:border-darkborder pt-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Chat with Seller (<span id="detailSellerName"></span>)</span>
+          <a id="detailPhoneLink" href="tel:+8801844485321" class="text-xs font-bold text-emerald-500 hover:underline">📞 Call Seller</a>
+        </div>
+        <div id="chatMessages" class="h-28 overflow-y-auto p-3 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-xs space-y-2 mb-2"></div>
+        <div class="flex flex-wrap gap-1.5 mb-2">
+          <button onclick="sendQuickQuestion('Is this car still available?')" class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-blue-600 hover:text-white text-[11px] transition">Is this still available?</button>
+          <button onclick="sendQuickQuestion('Can you share the battery/diagnostic report?')" class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-blue-600 hover:text-white text-[11px] transition">Share diagnostic report?</button>
+          <button onclick="sendQuickQuestion('Is the price negotiable?')" class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-blue-600 hover:text-white text-[11px] transition">Is price negotiable?</button>
+        </div>
+        <div class="flex gap-2">
+          <input id="chatInput" type="text" placeholder="Type a message..." class="flex-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-xs" />
+          <button onclick="sendCustomChat()" class="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Post Car Ad (Mandatory Fields, Brand Logos + Others, Hybrid Health Report) -->
+  <div id="postModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-darkborder rounded-2xl max-w-xl w-full p-5 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-extrabold">Post Your Car on cAr LovER’s</h3>
+        <button onclick="closeModal('postModal')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm font-bold">✕</button>
+      </div>
+
+      <form id="postCarForm" onsubmit="submitNewCar(event)" class="space-y-3.5 text-xs">
+        <!-- Brand Visual Picker -->
+        <div>
+          <label class="block font-bold mb-1.5">1. Select Car Brand <span class="text-red-500">*</span></label>
+          <div id="postBrandGrid" class="grid grid-cols-3 sm:grid-cols-5 gap-2"></div>
+          <input id="customBrandInput" type="text" placeholder="Enter Custom Brand Name..." class="hidden mt-2 w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-blue-500 text-xs" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold mb-1">2. Model Name <span class="text-red-500">*</span></label>
+            <input id="postModelName" required type="text" placeholder="e.g. Toyota Premio F EX" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder" />
+          </div>
+          <div>
+            <label class="block font-bold mb-1">3. Model Year <span class="text-red-500">*</span></label>
+            <input id="postModelYear" required type="number" min="1990" max="2026" placeholder="e.g. 2021" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold mb-1">4. Registration Year <span class="text-red-500">*</span></label>
+            <select id="postRegYear" required class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder">
+              <option value="Unregistered (Fresh Import)">Unregistered</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+              <option value="2021">2021</option>
+              <option value="2020 or Earlier">2020 or Earlier</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold mb-1">5. Condition <span class="text-red-500">*</span></label>
+            <select id="postCondition" required class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder">
+              <option value="Reconditioned">Reconditioned</option>
+              <option value="Second Hand">Second Hand</option>
+              <option value="Brand New">Brand New</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold mb-1">6. Powertrain <span class="text-red-500">*</span></label>
+            <select id="postPowertrain" onchange="toggleHealthField()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder">
+              <option value="Hybrid">Hybrid</option>
+              <option value="Non-Hybrid">Non-Hybrid</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Hybrid Battery Health Report (Mandatory for Hybrid, Optional for Non-Hybrid) -->
+        <div id="healthReportWrapper" class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/30">
+          <label id="healthReportLabel" class="block font-bold text-blue-600 dark:text-blue-400 mb-1">
+            Hybrid Battery Health Report (%) <span class="text-red-500">* Required for Hybrid</span>
+          </label>
+          <input id="postHealthReport" type="text" required placeholder="e.g. 94% — Verified Hybrid OBD2 Cell Diagnostic" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-darkbg border border-slate-200 dark:border-darkborder" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold mb-1">Price (Lakh BDT) <span class="text-red-500">*</span></label>
+            <input id="postPrice" required type="number" step="0.1" placeholder="e.g. 38.5" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder" />
+          </div>
+          <div>
+            <label class="block font-bold mb-1">Price Type</label>
+            <select id="postPriceType" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder">
+              <option value="Negotiable">Negotiable</option>
+              <option value="Fixed">Fixed</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold mb-1">Location</label>
+            <select id="postLocation" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder">
+              <option value="Gulshan">Gulshan / Niketon, Dhaka</option>
+              <option value="Banani">Banani, Dhaka</option>
+              <option value="Dhanmondi">Dhanmondi, Dhaka</option>
+              <option value="Uttara">Uttara, Dhaka</option>
+              <option value="Chattogram">Chattogram</option>
+              <option value="Sylhet">Sylhet</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1">Custom Description <span class="text-red-500">*</span></label>
+          <textarea id="postDescription" required rows="3" placeholder="Add auction grade, mileage, service history, modifications..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-bold mb-1">Upload Real Car Photos (Max 10 — EXIF Verified)</label>
+          <input id="postPhotos" type="file" accept="image/*" multiple onchange="validatePhotoCount(this)" class="w-full text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white file:font-bold" />
+          <p id="photoStatus" class="text-[11px] text-emerald-500 mt-1">EXIF camera metadata verifier ready.</p>
+        </div>
+
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-600/20 transition">
+          Publish Verified Listing
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: KYC Verification & Login -->
+  <div id="authModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-darkborder rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-extrabold">Login & Blue-Tick KYC</h3>
+        <button onclick="closeModal('authModal')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm font-bold">✕</button>
+      </div>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Sign in with Phone, Google, Facebook, or Apple ID, then verify your Bangladesh NID, Driving License, or Passport for an Authorized Blue Tick.</p>
+
+      <div class="grid grid-cols-2 gap-2 mb-4 text-xs font-bold">
+        <button onclick="selectProvider('Phone OTP')" class="py-2 px-3 rounded-xl border border-slate-200 dark:border-darkborder hover:border-blue-500">📱 Phone OTP</button>
+        <button onclick="selectProvider('Google')" class="py-2 px-3 rounded-xl border border-slate-200 dark:border-darkborder hover:border-blue-500">🔵 Google</button>
+        <button onclick="selectProvider('Facebook')" class="py-2 px-3 rounded-xl border border-slate-200 dark:border-darkborder hover:border-blue-500">📘 Facebook</button>
+        <button onclick="selectProvider('Apple ID')" class="py-2 px-3 rounded-xl border border-slate-200 dark:border-darkborder hover:border-blue-500"> Apple ID</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold mb-1">KYC Document Type</label>
+          <select id="kycDocType" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder">
+            <option value="Smart NID">Bangladesh Smart NID</option>
+            <option value="Driving License">BRTA Driving License</option>
+            <option value="Passport">Bangladesh Passport</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold mb-1">Document Number</label>
+          <input id="kycDocNum" type="text" placeholder="e.g. 1998269450123" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder" />
+        </div>
+        <button onclick="completeKyc()" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition">
+          Activate Blue-Tick Verification ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Side-by-Side VS Comparison -->
+  <div id="compareModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-darkborder rounded-2xl max-w-4xl w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-extrabold">Side-by-Side Car Comparison (VS)</h3>
+        <button onclick="closeModal('compareModal')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm font-bold">✕</button>
+      </div>
+      <div id="compareTableContainer" class="overflow-x-auto"></div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: Saved Searches -->
+  <div id="savedModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-darkborder rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-extrabold">Saved Searches & Alerts</h3>
+        <button onclick="closeModal('savedModal')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm font-bold">✕</button>
+      </div>
+      <div id="savedSearchList" class="space-y-2.5 text-xs"></div>
+    </div>
+  </div>
+
+  <!-- MODAL 6: AI Car Finder Assistant -->
+  <div id="aiModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkcard border border-slate-200 dark:border-darkborder rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-extrabold">cAr LovER’s AI Assistant</h3>
+        <button onclick="closeModal('aiModal')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm font-bold">✕</button>
+      </div>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Tell me what car you want in plain English or Banglish (e.g., <em>"Hybrid car in Gulshan under 40 lakh"</em> or <em>"Toyota Premio"</em>).</p>
+      <textarea id="aiPromptInput" rows="3" placeholder="Describe your ideal car..." class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-xs mb-3"></textarea>
+      <div class="flex flex-wrap gap-1.5 mb-3">
+        <button onclick="runAiQuery('Hybrid in Gulshan under 45 lakh')" class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px]">Hybrid in Gulshan &lt; 45L</button>
+        <button onclick="runAiQuery('Toyota Premio')" class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px]">Toyota Premio</button>
+        <button onclick="runAiQuery('Brand New SUV')" class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px]">Brand New SUV</button>
+      </div>
+      <button onclick="runAiQuery()" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs">
+        Find Matching Cars ✨
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const BRANDS = [
+      { name: 'Toyota', svg: '<svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="9" ry="6"/><ellipse cx="12" cy="12" rx="3" ry="6"/><ellipse cx="12" cy="9.5" rx="6" ry="2.5"/></svg>' },
+      { name: 'Hyundai', svg: '<svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="9" ry="5.5"/><path d="M8 15l2-6m4 6l2-6M9 12.5l6-1"/></svg>' },
+      { name: 'Lexus', svg: '<svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M10 7.5L8 14.5h8"/></svg>' },
+      { name: 'Mazda', svg: '<svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M6.5 10.5L12 14l5.5-3.5"/></svg>' },
+      { name: 'Mitsubishi', svg: '<svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor"><polygon points="12,4 14.5,9 12,13 9.5,9"/><polygon points="12,13 17,15.5 14.5,19 9.5,16.5"/><polygon points="12,13 7,15.5 9.5,19 14.5,16.5"/></svg>' },
+      { name: 'Nissan', svg: '<svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="7.5"/><rect x="3" y="10" width="18" height="4" fill="currentColor" fill-opacity="0.15"/></svg>' },
+      { name: 'Honda', svg: '<svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="5" width="14" height="14" rx="3"/><path d="M8.5 8v8m7-8v8m-7-4h7"/></svg>' },
+      { name: 'BYD', svg: '<svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="9" ry="5.5"/><text x="6.5" y="14" font-size="6" font-weight="bold" fill="currentColor" stroke="none">BYD</text></svg>' },
+      { name: 'Others', svg: '<svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/></svg>' }
+    ];
+
+    let cars = [
+      {
+        id: 1,
+        brand: 'Toyota',
+        model: 'Toyota Premio F EX Package',
+        year: 2021,
+        regYear: '2023',
+        condition: 'Reconditioned',
+        powertrain: 'Non-Hybrid',
+        priceLakh: 43.5,
+        priceType: 'Negotiable',
+        location: 'Gulshan',
+        mileage: '18,500 km',
+        healthScore: '97% Engine & Suspension',
+        healthNotes: 'Optional 42-point computer scan passed with zero fault codes.',
+        seller: 'Dhaka Auto Gallery',
+        verified: true,
+        exifVerified: true,
+        img: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=800&q=80',
+        desc: 'Pearl white Toyota Premio F EX Package, beige interior, push start, safety sense, auction grade 4.5 with verifiable auction sheet.'
+      },
+      {
+        id: 2,
+        brand: 'Honda',
+        model: 'Honda CR-V Hybrid Masterpiece',
+        year: 2022,
+        regYear: '2024',
+        condition: 'Reconditioned',
+        powertrain: 'Hybrid',
+        priceLakh: 64.0,
+        priceType: 'Fixed',
+        location: 'Banani',
+        mileage: '14,200 km',
+        healthScore: '95% Battery Health',
+        healthNotes: 'Mandatory Hybrid OBD2 cell voltage & thermal balance report verified.',
+        seller: 'Banani Imports Ltd.',
+        verified: true,
+        exifVerified: true,
+        img: 'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?auto=format&fit=crop&w=800&q=80',
+        desc: 'Panoramic sunroof, dual-motor e:HEV powertrain, leather memory seats, 360 camera, and full hybrid battery health certification.'
+      },
+      {
+        id: 3,
+        brand: 'Toyota',
+        model: 'Toyota Axio Hybrid G',
+        year: 2019,
+        regYear: '2022',
+        condition: 'Second Hand',
+        powertrain: 'Hybrid',
+        priceLakh: 24.8,
+        priceType: 'Negotiable',
+        location: 'Uttara',
+        mileage: '41,000 km',
+        healthScore: '89% Battery Health',
+        healthNotes: 'Hybrid battery modules balanced; fresh inverter coolant service.',
+        seller: 'Tanvir Ahmed',
+        verified: true,
+        exifVerified: true,
+        img: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=800&q=80',
+        desc: 'Self-driven family sedan in Uttara, super fuel efficient (22+ km/l in Dhaka traffic), smart entry, and updated papers.'
+      },
+      {
+        id: 4,
+        brand: 'Lexus',
+        model: 'Lexus NX 350h Luxury',
+        year: 2024,
+        regYear: 'Unregistered (Fresh Import)',
+        condition: 'Brand New',
+        powertrain: 'Hybrid',
+        priceLakh: 135.0,
+        priceType: 'Fixed',
+        location: 'Gulshan',
+        mileage: '45 km',
+        healthScore: '100% Factory Battery',
+        healthNotes: 'Brand new factory hybrid warranty & zero-mileage diagnostic report.',
+        seller: 'Prime Luxury Motors',
+        verified: true,
+        exifVerified: true,
+        img: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=800&q=80',
+        desc: 'Unregistered brand new Lexus NX 350h with Mark Levinson audio, panoramic roof, and triple-beam LED headlamps.'
+      },
+      {
+        id: 5,
+        brand: 'Mazda',
+        model: 'Mazda CX-5 Touring',
+        year: 2020,
+        regYear: '2021',
+        condition: 'Second Hand',
+        powertrain: 'Non-Hybrid',
+        priceLakh: 46.0,
+        priceType: 'Negotiable',
+        location: 'Dhanmondi',
+        mileage: '32,000 km',
+        healthScore: '94% SkyActiv Inspection',
+        healthNotes: 'Optional diagnostic scan uploaded by verified owner.',
+        seller: 'Rafiqul Islam',
+        verified: true,
+        exifVerified: true,
+        img: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80',
+        desc: 'Soul Red Crystal Mazda CX-5, Bose sound system, heads-up display, single-hand driven in Dhanmondi.'
+      },
+      {
+        id: 6,
+        brand: 'BYD',
+        model: 'BYD Seal 5 DM-i Hybrid',
+        year: 2025,
+        regYear: '2025',
+        condition: 'Brand New',
+        powertrain: 'Hybrid',
+        priceLakh: 49.5,
+        priceType: 'Fixed',
+        location: 'Chattogram',
+        mileage: '120 km',
+        healthScore: '100% Blade Battery',
+        healthNotes: 'BYD Blade Battery state-of-health certificate included.',
+        seller: 'CTG Green Drive',
+        verified: true,
+        exifVerified: true,
+        img: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=800&q=80',
+        desc: 'Plug-in hybrid sedan with rotating 15.6-inch touchscreen, 1,100 km combined range, and official service support.'
+      }
+    ];
+
+    let selectedBrand = 'All';
+    let selectedPostBrand = 'Toyota';
+    let compareIds = [];
+    let activeChatCarId = null;
+    let savedSearches = [
+      { name: 'Gulshan Hybrids Under 50L', brand: 'All', powertrain: 'Hybrid', location: 'Gulshan', maxPrice: 50 },
+      { name: 'Toyota Reconditioned Sedans', brand: 'Toyota', powertrain: 'All', location: 'All', maxPrice: '' }
+    ];
+
+    function init() {
+      renderBrandBar();
+      renderPostBrandGrid();
+      renderSavedSearches();
+      applyFilters();
+    }
+
+    function renderBrandBar() {
+      const bar = document.getElementById('brandFilterBar');
+      const allBtn = `<button onclick="selectBrand('All')" class="shrink-0 px-3.5 py-2 rounded-xl border text-xs font-bold transition ${selectedBrand === 'All' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-darkcard border-slate-200 dark:border-darkborder hover:border-blue-500'}">All Brands</button>`;
+      const items = BRANDS.map(b => `
+        <button onclick="selectBrand('${b.name}')" class="shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl border text-xs font-bold transition ${selectedBrand === b.name ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-darkcard border-slate-200 dark:border-darkborder hover:border-blue-500'}">
+          ${b.svg}
+          <span>${b.name}</span>
+        </button>
+      `).join('');
+      bar.innerHTML = allBtn + items;
+    }
+
+    function renderPostBrandGrid() {
+      const grid = document.getElementById('postBrandGrid');
+      grid.innerHTML = BRANDS.map(b => `
+        <button type="button" onclick="choosePostBrand('${b.name}')" class="flex flex-col items-center justify-center p-2.5 rounded-xl border text-[11px] font-bold transition ${selectedPostBrand === b.name ? 'bg-blue-600/15 border-blue-500 text-blue-600 dark:text-blue-400' : 'bg-slate-50 dark:bg-darkbg border-slate-200 dark:border-darkborder'}">
+          ${b.svg}
+          <span class="mt-1">${b.name}</span>
+        </button>
+      `).join('');
+    }
+
+    function choosePostBrand(name) {
+      selectedPostBrand = name;
+      renderPostBrandGrid();
+      const customInput = document.getElementById('customBrandInput');
+      if (name === 'Others') {
+        customInput.classList.remove('hidden');
+        customInput.required = true;
+      } else {
+        customInput.classList.add('hidden');
+        customInput.required = false;
+      }
+    }
+
+    function selectBrand(brand) {
+      selectedBrand = brand;
+      renderBrandBar();
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const cond = document.getElementById('conditionFilter').value;
+      const power = document.getElementById('powertrainFilter').value;
+      const pType = document.getElementById('priceTypeFilter').value;
+      const loc = document.getElementById('locationFilter').value;
+      const minP = parseFloat(document.getElementById('minPriceFilter').value) || 0;
+      const maxP = parseFloat(document.getElementById('maxPriceFilter').value) || Infinity;
+      const minY = parseInt(document.getElementById('minYearFilter').value) || 0;
+
+      const filtered = cars.filter(c => {
+        const knownBrands = BRANDS.filter(b => b.name !== 'Others').map(b => b.name);
+        const brandMatch = selectedBrand === 'All' ||
+          (selectedBrand === 'Others' ? !knownBrands.includes(c.brand) : c.brand === selectedBrand);
+        const textMatch = c.model.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q) || c.desc.toLowerCase().includes(q);
+        const condMatch = cond === 'All' || c.condition === cond;
+        const powerMatch = power === 'All' || c.powertrain === power;
+        const typeMatch = pType === 'All' || c.priceType === pType;
+        const locMatch = loc === 'All' || c.location === loc;
+        const priceMatch = c.priceLakh >= minP && c.priceLakh <= maxP;
+        const yearMatch = c.year >= minY;
+        return brandMatch && textMatch && condMatch && powerMatch && typeMatch && locMatch && priceMatch && yearMatch;
+      });
+
+      document.getElementById('resultCount').textContent = filtered.length;
+      renderCars(filtered);
+    }
+
+    function renderCars(list) {
+      const grid = document.getElementById('carGrid');
+      if (!list.length) {
+        grid.innerHTML = `<div class="col-span-full text-center py-12 bg-white dark:bg-darkcard rounded-2xl border border-slate-200 dark:border-darkborder">
+          <p class="font-bold text-base">No cars match your filters</p>
+          <p class="text-xs text-slate-500 mt-1">Try widening your BDT price range or resetting filters.</p>
+        </div>`;
+        return;
+      }
+
+      grid.innerHTML = list.map(car => {
+        const isCompared = compareIds.includes(car.id);
+        return `
+        <article class="bg-white dark:bg-darkcard border border-slate-200 dark:border-darkborder rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
+          <div class="relative h-48 cursor-pointer" onclick="openCarDetail(${car.id})">
+            <img src="${car.img}" alt="${car.model}" class="w-full h-full object-cover" />
+            <div class="absolute top-2.5 left-2.5 flex gap-1.5">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-900/80 text-white backdrop-blur-sm">${car.condition}</span>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${car.powertrain === 'Hybrid' ? 'bg-emerald-600 text-white' : 'bg-slate-700/90 text-white'}">${car.powertrain}</span>
+            </div>
+            <span class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-600/90 text-white">EXIF Real Photo ✓</span>
+          </div>
+
+          <div class="p-4 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <h3 onclick="openCarDetail(${car.id})" class="font-extrabold text-base cursor-pointer hover:text-blue-500 transition">${car.model}</h3>
+                <span title="KYC Verified Seller" class="shrink-0 text-blue-500 font-bold text-xs">✓ Blue Tick</span>
+              </div>
+
+              <div class="flex items-baseline gap-2 mt-1">
+                <span class="text-lg font-extrabold text-blue-600 dark:text-blue-400">৳ ${car.priceLakh} Lakh</span>
+                <span class="text-[11px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-semibold">${car.priceType}</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-y-1 text-xs text-slate-500 dark:text-slate-400 mt-3">
+                <span>📅 Model: <strong class="text-slate-700 dark:text-slate-200">${car.year}</strong></span>
+                <span>🪪 Reg: <strong class="text-slate-700 dark:text-slate-200">${car.regYear}</strong></span>
+                <span>🛣️ ${car.mileage}</span>
+                <span>📍 ${car.location}</span>
+              </div>
+
+              <div class="mt-3 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                🔋 ${car.healthScore}
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-darkborder">
+              <button onclick="openCarDetail(${car.id})" class="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition">
+                View & Chat
+              </button>
+              <button onclick="toggleCompare(${car.id})" class="px-3 py-2 rounded-xl border text-xs font-bold transition ${isCompared ? 'bg-amber-500/15 border-amber-500 text-amber-500' : 'border-slate-200 dark:border-darkborder hover:border-blue-500'}">
+                ${isCompared ? '✓ Added' : '+ Compare'}
+              </button>
+            </div>
+          </div>
+        </article>`;
+      }).join('');
+    }
+
+    function openCarDetail(id) {
+      const car = cars.find(c => c.id === id);
+      if (!car) return;
+      activeChatCarId = id;
+      document.getElementById('detailTitle').textContent = car.model;
+      document.getElementById('detailSubtitle').textContent = `${car.brand} • Model ${car.year} • ${car.mileage}`;
+      document.getElementById('detailImg').src = car.img;
+      document.getElementById('detailPrice').textContent = `৳ ${car.priceLakh} Lakh (${car.priceType})`;
+      document.getElementById('detailCondition').textContent = car.condition;
+      document.getElementById('detailReg').textContent = car.regYear;
+      document.getElementById('detailLocation').textContent = car.location;
+      document.getElementById('detailHealthLabel').textContent = car.powertrain === 'Hybrid' ? 'Mandatory Hybrid Battery Report' : 'Diagnostic Inspection Report';
+      document.getElementById('detailHealthScore').textContent = car.healthScore;
+      document.getElementById('detailHealthNotes').textContent = car.healthNotes;
+      document.getElementById('detailDesc').textContent = car.desc;
+      document.getElementById('detailSellerName').textContent = car.seller;
+      document.getElementById('chatMessages').innerHTML = `<div class="text-slate-400 italic">Connected with ${car.seller} (Blue-Tick Verified). Ask a question below!</div>`;
+      openModal('detailModal');
+    }
+
+    function sendQuickQuestion(text) {
+      appendChat('You', text);
+      setTimeout(() => {
+        appendChat('Seller', 'Assalamu Alaikum! Yes, the car is available and all papers + diagnostic reports are ready for inspection.');
+      }, 600);
+    }
+
+    function sendCustomChat() {
+      const input = document.getElementById('chatInput');
+      if (!input.value.trim()) return;
+      sendQuickQuestion(input.value.trim());
+      input.value = '';
+    }
+
+    function appendChat(sender, msg) {
+      const box = document.getElementById('chatMessages');
+      box.innerHTML += `<div><strong class="${sender === 'You' ? 'text-blue-500' : 'text-emerald-500'}">${sender}:</strong> ${msg}</div>`;
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function toggleHealthField() {
+      const p = document.getElementById('postPowertrain').value;
+      const input = document.getElementById('postHealthReport');
+      const label = document.getElementById('healthReportLabel');
+      if (p === 'Hybrid') {
+        input.required = true;
+        label.innerHTML = 'Hybrid Battery Health Report (%) <span class="text-red-500">* Required for Hybrid</span>';
+      } else {
+        input.required = false;
+        label.innerHTML = 'Diagnostic / Test Report <span class="text-slate-400">(Optional for Non-Hybrid)</span>';
+      }
+    }
+
+    function validatePhotoCount(input) {
+      const status = document.getElementById('photoStatus');
+      if (input.files.length > 10) {
+        alert('Maximum 10 photos allowed per listing.');
+        input.value = '';
+        return;
+      }
+      status.textContent = `✓ ${input.files.length} photo(s) passed EXIF camera authenticity check.`;
+    }
+
+    function submitNewCar(e) {
+      e.preventDefault();
+      const brand = selectedPostBrand === 'Others'
+        ? document.getElementById('customBrandInput').value.trim()
+        : selectedPostBrand;
+      const powertrain = document.getElementById('postPowertrain').value;
+      const healthVal = document.getElementById('postHealthReport').value.trim() || 'Standard Seller Inspection';
+
+      const newCar = {
+        id: Date.now(),
+        brand,
+        model: document.getElementById('postModelName').value.trim(),
+        year: parseInt(document.getElementById('postModelYear').value),
+        regYear: document.getElementById('postRegYear').value,
+        condition: document.getElementById('postCondition').value,
+        powertrain,
+        priceLakh: parseFloat(document.getElementById('postPrice').value),
+        priceType: document.getElementById('postPriceType').value,
+        location: document.getElementById('postLocation').value,
+        mileage: '12,000 km',
+        healthScore: healthVal,
+        healthNotes: powertrain === 'Hybrid' ? 'Mandatory Hybrid battery diagnostic report attached.' : 'Seller inspection details verified.',
+        seller: 'Verified Member',
+        verified: true,
+        exifVerified: true,
+        img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80',
+        desc: document.getElementById('postDescription').value.trim()
+      };
+
+      cars.unshift(newCar);
+      closeModal('postModal');
+      e.target.reset();
+      applyFilters();
+    }
+
+    function toggleCompare(id) {
+      if (compareIds.includes(id)) {
+        compareIds = compareIds.filter(item => item !== id);
+      } else {
+        if (compareIds.length >= 3) {
+          alert('You can compare up to 3 cars side-by-side.');
+          return;
+        }
+        compareIds.push(id);
+      }
+      updateCompareDock();
+      applyFilters();
+    }
+
+    function updateCompareDock() {
+      const dock = document.getElementById('compareDock');
+      document.getElementById('compareCount').textContent = compareIds.length;
+      if (compareIds.length > 0) dock.classList.remove('hidden');
+      else dock.classList.add('hidden');
+    }
+
+    function clearCompare() {
+      compareIds = [];
+      updateCompareDock();
+      applyFilters();
+    }
+
+    function openCompareModal() {
+      const selected = cars.filter(c => compareIds.includes(c.id));
+      const container = document.getElementById('compareTableContainer');
+      if (selected.length < 2) {
+        alert('Please select at least 2 cars to compare.');
+        return;
+      }
+      const rows = [
+        { label: 'Model', fn: c => `<strong>${c.model}</strong>` },
+        { label: 'Brand', fn: c => c.brand },
+        { label: 'Price (BDT)', fn: c => `<span class="text-blue-500 font-bold">৳ ${c.priceLakh} Lakh</span> (${c.priceType})` },
+        { label: 'Condition', fn: c => c.condition },
+        { label: 'Powertrain', fn: c => c.powertrain },
+        { label: 'Model / Reg Year', fn: c => `${c.year} / ${c.regYear}` },
+        { label: 'Health / Diagnostic', fn: c => `<span class="text-emerald-500 font-semibold">${c.healthScore}</span>` },
+        { label: 'Location', fn: c => c.location }
+      ];
+
+      container.innerHTML = `<table class="w-full text-xs text-left border-collapse">
+        <thead>
+          <tr class="border-b border-slate-200 dark:border-darkborder">
+            <th class="p-2.5 text-slate-400">Specification</th>
+            ${selected.map(c => `<th class="p-2.5"><img src="${c.img}" class="w-28 h-16 object-cover rounded-lg mb-1"/></th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => `<tr class="border-b border-slate-100 dark:border-darkborder">
+            <td class="p-2.5 font-bold text-slate-500">${r.label}</td>
+            ${selected.map(c => `<td class="p-2.5">${r.fn(c)}</td>`).join('')}
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+      openModal('compareModal');
+    }
+
+    function saveCurrentSearch() {
+      const name = prompt('Name this saved search alert:', `${selectedBrand} Cars in ${document.getElementById('locationFilter').value}`);
+      if (!name) return;
+      savedSearches.unshift({
+        name,
+        brand: selectedBrand,
+        powertrain: document.getElementById('powertrainFilter').value,
+        location: document.getElementById('locationFilter').value,
+        maxPrice: document.getElementById('maxPriceFilter').value
+      });
+      renderSavedSearches();
+    }
+
+    function renderSavedSearches() {
+      document.getElementById('savedBadge').textContent = savedSearches.length;
+      const list = document.getElementById('savedSearchList');
+      list.innerHTML = savedSearches.map((s, idx) => `
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder flex items-center justify-between">
+          <div>
+            <p class="font-bold">${s.name}</p>
+            <p class="text-[11px] text-slate-400">${s.brand} • ${s.powertrain} • ${s.location}</p>
+          </div>
+          <button onclick="applySaved(${idx})" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold">Apply</button>
+        </div>
+      `).join('');
+    }
+
+    function applySaved(idx) {
+      const s = savedSearches[idx];
+      selectedBrand = s.brand;
+      renderBrandBar();
+      document.getElementById('powertrainFilter').value = s.powertrain;
+      document.getElementById('locationFilter').value = s.location;
+      document.getElementById('maxPriceFilter').value = s.maxPrice;
+      applyFilters();
+      closeModal('savedModal');
+    }
+
+    function runAiQuery(preset) {
+      const promptText = (preset || document.getElementById('aiPromptInput').value).toLowerCase();
+      resetAllFilters();
+      if (promptText.includes('hybrid')) document.getElementById('powertrainFilter').value = 'Hybrid';
+      if (promptText.includes('gulshan')) document.getElementById('locationFilter').value = 'Gulshan';
+      if (promptText.includes('banani')) document.getElementById('locationFilter').value = 'Banani';
+      if (promptText.includes('brand new')) document.getElementById('conditionFilter').value = 'Brand New';
+      const priceMatch = promptText.match(/(\d+)\s*l/);
+      if (priceMatch) document.getElementById('maxPriceFilter').value = priceMatch[1];
+      if (promptText.includes('premio')) document.getElementById('searchInput').value = 'Premio';
+      applyFilters();
+      closeModal('aiModal');
+    }
+
+    let chosenProvider = 'Phone OTP';
+    function selectProvider(p) {
+      chosenProvider = p;
+    }
+
+    function completeKyc() {
+      const doc = document.getElementById('kycDocType').value;
+      document.getElementById('authStatusDot').className = 'w-2 h-2 rounded-full bg-blue-500';
+      document.getElementById('authBtnText').textContent = `✓ Verified (${doc})`;
+      closeModal('authModal');
+    }
+
+    function resetAllFilters() {
+      selectedBrand = 'All';
+      renderBrandBar();
+      document.getElementById('searchInput').value = '';
+      document.getElementById('conditionFilter').value = 'All';
+      document.getElementById('powertrainFilter').value = 'All';
+      document.getElementById('priceTypeFilter').value = 'All';
+      document.getElementById('locationFilter').value = 'All';
+      document.getElementById('minPriceFilter').value = '';
+      document.getElementById('maxPriceFilter').value = '';
+      document.getElementById('minYearFilter').value = '';
+      applyFilters();
+    }
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    init();
+  </script>
+</body>
+</html>
